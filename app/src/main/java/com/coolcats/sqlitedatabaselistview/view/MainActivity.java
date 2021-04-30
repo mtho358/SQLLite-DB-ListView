@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -73,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         sharedPreferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
 
         if (sharedPreferences.getBoolean("FIRST_TIME", true)) {
-            sharedPreferences.edit().putBoolean("FIRST_TIME", false);
             showWelcomeDialog();
         }
 
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //binding of the spinner
         binding.positionSpinner.setAdapter(spinnerAdapter);
         binding.positionSpinner.setOnItemSelectedListener(this);
-        Logger.logMessage("Spinner: " + Position.valueOf(options.get(spinnerId)) + " selected");
         dbHelper = new UserDatabaseHelper(this);
 
 
@@ -95,12 +95,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (checkInput()) {
                 User newUser = new User(binding.editNameEdittext.getText().toString().trim(),
                         Position.valueOf(options.get(spinnerId)));
-                Logger.logMessage("User " + newUser.getName() + " created");
-                Logger.logMessage("Spinner: " + Position.valueOf(options.get(spinnerId)) + " selected");
                 dbHelper.insertUser(newUser);
-                Logger.logMessage("New user inserted into database");
                 readDB();
-                Logger.logMessage("Updated version of database");
                 binding.editNameEdittext.setText("");
             }
         });
@@ -109,15 +105,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, UserDetailsActivity.class);
-                log.logMessage("Item: " + position + "was selected");
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("READ", userAdapter.getItem(position));
-                log.logMessage("Bundle created with" + userAdapter.getItemId(position));
                 intent.putExtras(bundle);
-
                 startActivity(intent);
             }
         });
+
+        readDB();
     }
 
     private boolean checkInput() {
@@ -183,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        sharedPreferences.edit().putBoolean("FIRST_TIME", false);
                         dialog.dismiss();
                     }
                 }).create().show();
