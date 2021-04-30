@@ -2,6 +2,7 @@ package com.coolcats.sqlitedatabaselistview.view;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -101,6 +102,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 readDB();
                 Logger.logMessage("Updated version of database");
                 binding.editNameEdittext.setText("");
+            }
+        });
+
+        binding.userDetailsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, UserDetailsActivity.class);
+                startActivity(intent);
             }
         });
     }
