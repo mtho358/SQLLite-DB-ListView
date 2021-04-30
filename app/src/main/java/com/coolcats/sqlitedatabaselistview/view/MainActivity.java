@@ -109,6 +109,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, UserDetailsActivity.class);
+                log.logMessage("Item: " + position + "was selected");
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("READ", userAdapter.getItem(position));
+                log.logMessage("Bundle created with" + userAdapter.getItemId(position));
+                intent.putExtras(bundle);
+
                 startActivity(intent);
             }
         });
